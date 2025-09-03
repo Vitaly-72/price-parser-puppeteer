@@ -21,27 +21,39 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
 
-    - name: Cache Puppeteer
+    - name: Cache node_modules
+      uses: actions/cache@v3
+      id: node-cache
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Cache Puppeteer browsers
       uses: actions/cache@v3
       id: puppeteer-cache
       with:
-        path: |
-          ~/.cache/puppeteer
-          node_modules
-        key: ${{ runner.os }}-puppeteer-${{ hashFiles('package-lock.json') }}
+        path: ~/.cache/puppeteer
+        key: ${{ runner.os }}-puppeteer-${{ hashFiles('package.json') }}
         restore-keys: |
           ${{ runner.os }}-puppeteer-
 
     - name: Install dependencies
       run: |
-        if [ ! -d "node_modules" ] || [ ! -d ~/.cache/puppeteer ]; then
-          echo "Устанавливаем зависимости..."
-          npm ci
+        if [ ! -d "node_modules" ]; then
+          echo "Устанавливаем npm зависимости..."
+          npm install
+        else
+          echo "node_modules уже установлены из кэша"
+        fi
+
+        if [ ! -d ~/.cache/puppeteer ]; then
+          echo "Устанавливаем Chrome для Puppeteer..."
           npx puppeteer browsers install chrome
         else
-          echo "Зависимости уже установлены из кэша"
+          echo "Chrome уже установлен из кэша"
         fi
 
     - name: Run parser
