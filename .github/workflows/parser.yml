@@ -2,6 +2,8 @@ name: Price Parser
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * *'
 
 jobs:
   parse-prices:
@@ -19,18 +21,28 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
+        cache: 'npm'
 
-    - name: Initialize package.json
-      run: |
-        npm init -y
+    - name: Cache Puppeteer
+      uses: actions/cache@v3
+      id: puppeteer-cache
+      with:
+        path: |
+          ~/.cache/puppeteer
+          node_modules
+        key: ${{ runner.os }}-puppeteer-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-puppeteer-
 
-    - name: Install Puppeteer
+    - name: Install dependencies
       run: |
-        npm install puppeteer@21.0.0
-
-    - name: Install Chrome
-      run: |
-        npx puppeteer browsers install chrome
+        if [ ! -d "node_modules" ] || [ ! -d ~/.cache/puppeteer ]; then
+          echo "Устанавливаем зависимости..."
+          npm ci
+          npx puppeteer browsers install chrome
+        else
+          echo "Зависимости уже установлены из кэша"
+        fi
 
     - name: Run parser
       run: |
@@ -41,5 +53,5 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add results/prices.json
-        git commit -m "Update prices $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+        git commit -m "🤖 Update prices $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
         git push
