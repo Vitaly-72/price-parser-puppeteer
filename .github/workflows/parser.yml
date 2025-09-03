@@ -1,0 +1,41 @@
+name: Price Parser
+
+on:
+  workflow_dispatch:  # Ручной запуск
+  schedule:
+    - cron: '0 8 * * *'  # Каждый день в 8:00 UTC
+
+jobs:
+  parse-prices:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm install
+        npx puppeteer browsers install chrome
+
+    - name: Run Puppeteer parser
+      run: |
+        node parser/puppeteer_parser.js
+
+    - name: Commit results
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add results/prices.json
+        git commit -m "🤖 Auto-update prices $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+        git push
