@@ -1,25 +1,66 @@
-const puppeteer = require('puppeteer');
+// Используем puppeteer-core вместо puppeteer
+const puppeteer = require('puppeteer-core');
 const fs = require('fs');
 const path = require('path');
-const { PRODUCTS_CONFIG, PARSER_CONFIG } = require('./config');
 
-// Функция для извлечения цены из текста
+// Конфигурация продуктов
+const PRODUCTS_CONFIG = {
+    "арматура": {
+        "арматура 8мм": [
+            {
+                "url": "https://tyumen.spk.ru/product/armatura-8-6m-a500-34028-16/",
+                "selector": "div.product-m__price > div > div.product-m__price-value > span"
+            },
+            {
+                "url": "https://72parad.ru/metalloprokat/armatura/armatura-8mm/armatura-8mm-6m",
+                "selector": "li > h2"
+            },
+            {
+                "url": "https://trimet.ru/catalog/metalloprokat/sortovoy_prokat/armatura/armatura_a500s_8_st_3sp_ps_gost_52544_2006_gost_34028_2016/",
+                "selector": "div.product__price > div > div:nth-child(2) > p:nth-child(2) > strong"
+            }
+        ]
+    },
+    "труба профильная": {
+        "40*20*2": [
+            {
+                "url": "https://trimet.ru/catalog/metalloprokat/trubnyy_prokat/truba_profilnaya/truby_profilnye_40_20_2_st_0_2_3_10_20/",
+                "selector": "div.product__price > div > div:nth-child(2) > p:nth-child(2) > strong"
+            },
+            {
+                "url": "https://72parad.ru/metalloprokat/truba-profilnaya/truba-profilnaya-40x40/truba-profilnaya-40mm-40mm-2mm-6m",
+                "selector": "li > h2"
+            },
+            {
+                "url": "https://tyumen.spk.ru/product/truba-profilnaya-40x20x2-gost/",
+                "selector": "div.product-m__price > div > div.product-m__price-value > span"
+            }
+        ]
+    }
+};
+
+const PARSER_CONFIG = {
+    timeout: 30000,
+    waitTime: 5000,
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+};
+
 function extractPrice(text) {
     if (!text) return null;
-    
-    // Убираем все нечисловые символы кроме точки и запятой
     const cleaned = text.replace(/[^\d,.]/g, '').replace(',', '.');
-    
-    // Ищем числа
     const numbers = cleaned.match(/\d+\.?\d*/);
     return numbers ? parseFloat(numbers[0]) : null;
 }
 
-// Основная функция парсинга
 async function parsePrice(url, selector) {
     console.log(`🔄 Парсим: ${url}`);
     
+    // Путь к системному Chrome
+    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
+                          '/usr/bin/chromium-browser';
+
     const browser = await puppeteer.launch({
+        executablePath: executablePath,
         headless: 'new',
         args: [
             '--no-sandbox',
@@ -33,24 +74,19 @@ async function parsePrice(url, selector) {
 
     try {
         const page = await browser.newPage();
-        
-        // Настраиваем страницу
         await page.setBypassCSP(true);
         await page.setUserAgent(PARSER_CONFIG.userAgent);
         await page.setViewport({ width: 1920, height: 1080 });
 
-        // Переходим на страницу
         console.log(`🌐 Открываем страницу: ${url}`);
         await page.goto(url, { 
             waitUntil: 'networkidle2', 
             timeout: PARSER_CONFIG.timeout 
         });
 
-        // Ждем загрузки
         console.log(`⏳ Ждем загрузки...`);
         await page.waitForTimeout(PARSER_CONFIG.waitTime);
 
-        // Пробуем найти элемент по селектору
         console.log(`🔍 Ищем селектор: ${selector}`);
         const element = await page.$(selector);
         
@@ -59,11 +95,9 @@ async function parsePrice(url, selector) {
             return null;
         }
 
-        // Получаем текст элемента
         const priceText = await page.evaluate(el => el.textContent, element);
         console.log(`📄 Найден текст: "${priceText}"`);
 
-        // Извлекаем цену
         const price = extractPrice(priceText);
         console.log(price ? `✅ Цена найдена: ${price}` : '❌ Не удалось извлечь цену');
 
@@ -77,23 +111,19 @@ async function parsePrice(url, selector) {
     }
 }
 
-// Главная функция
 async function main() {
     console.log('🚀 Запуск Puppeteer парсера...');
-    console.log('========================================');
-
+    
     const results = {
         last_updated: new Date().toISOString(),
         products: {}
     };
 
-    // Создаем папку results если её нет
     const resultsDir = path.join(__dirname, '../results');
     if (!fs.existsSync(resultsDir)) {
         fs.mkdirSync(resultsDir, { recursive: true });
     }
 
-    // Парсим все продукты
     for (const [category, products] of Object.entries(PRODUCTS_CONFIG)) {
         results.products[category] = {};
         
@@ -101,15 +131,11 @@ async function main() {
             results.products[category][productName] = {};
             
             console.log(`\n📦 Категория: ${category} -> ${productName}`);
-            console.log('----------------------------------------');
 
             for (let i = 0; i < sources.length; i++) {
                 const source = sources[i];
                 const domain = new URL(source.url).hostname;
                 const sourceKey = `${domain}_${i}`;
-
-                console.log(`\n🔗 URL: ${source.url}`);
-                console.log(`🎯 Селектор: ${source.selector}`);
 
                 const price = await parsePrice(source.url, source.selector);
                 
@@ -120,43 +146,17 @@ async function main() {
                     success: price !== null,
                     timestamp: new Date().toISOString()
                 };
-
-                console.log(price !== null ? '✅ Успешно' : '❌ Не удалось');
             }
         }
     }
 
-    // Сохраняем результаты
     const outputPath = path.join(resultsDir, 'prices.json');
     fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));
     
-    console.log('\n========================================');
-    console.log('🎉 Парсинг завершен!');
+    console.log('\n🎉 Парсинг завершен!');
     console.log(`📁 Результаты сохранены в: ${outputPath}`);
-
-    // Статистика
-    let total = 0;
-    let success = 0;
-
-    for (const category of Object.values(results.products)) {
-        for (const product of Object.values(category)) {
-            for (const item of Object.values(product)) {
-                total++;
-                if (item.success) success++;
-            }
-        }
-    }
-
-    console.log(`📊 Статистика: ${success}/${total} успешно`);
 }
 
-// Обработка ошибок
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-    process.exit(1);
-});
-
-// Запуск
 main().catch(error => {
     console.error('❌ Критическая ошибка:', error);
     process.exit(1);
