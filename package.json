@@ -1,16 +1,16 @@
 {
-  "name": "price-parser-puppeteer",
+  "name": "price-parser-playwright",
   "version": "1.0.0",
-  "description": "Price parser using Puppeteer for GitHub Actions",
-  "main": "parser/puppeteer_parser.js",
+  "description": "Price parser using Playwright for GitHub Actions",
+  "main": "parser/playwright_parser.js",
   "scripts": {
-    "start": "node parser/puppeteer_parser.js",
-    "parse": "node parser/puppeteer_parser.js"
+    "start": "node parser/playwright_parser.js",
+    "parse": "node parser/playwright_parser.js"
   },
   "dependencies": {
-    "puppeteer": "^20.0.0"
+    "playwright": "^1.40.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=16.0.0"
   }
 }
