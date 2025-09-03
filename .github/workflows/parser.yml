@@ -1,9 +1,7 @@
 name: Price Parser
 
 on:
-  workflow_dispatch:  # Ручной запуск
-  schedule:
-    - cron: '0 8 * * *'  # Каждый день в 8:00 UTC
+  workflow_dispatch:
 
 jobs:
   parse-prices:
@@ -21,14 +19,20 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
 
-    - name: Install dependencies
+    - name: Initialize package.json
       run: |
-        npm install
+        npm init -y
+
+    - name: Install Puppeteer
+      run: |
+        npm install puppeteer@21.0.0
+
+    - name: Install Chrome
+      run: |
         npx puppeteer browsers install chrome
 
-    - name: Run Puppeteer parser
+    - name: Run parser
       run: |
         node parser/puppeteer_parser.js
 
@@ -37,5 +41,5 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add results/prices.json
-        git commit -m "🤖 Auto-update prices $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+        git commit -m "Update prices $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
         git push
