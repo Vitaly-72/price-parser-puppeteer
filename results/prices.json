@@ -1,1 +1,55 @@
-
+{
+  "last_updated": "2025-09-03T11:16:29.581Z",
+  "products": {
+    "арматура": {
+      "арматура 8мм": {
+        "tyumen.spk.ru_0": {
+          "price": null,
+          "url": "https://tyumen.spk.ru/product/armatura-8-6m-a500-34028-16/",
+          "selector": "div.product-m__price > div > div.product-m__price-value > span",
+          "success": false,
+          "timestamp": "2025-09-03T11:16:59.817Z"
+        },
+        "72parad.ru_1": {
+          "price": 150,
+          "url": "https://72parad.ru/metalloprokat/armatura/armatura-8mm/armatura-8mm-6m",
+          "selector": "li > h2",
+          "success": true,
+          "timestamp": "2025-09-03T11:17:08.942Z"
+        },
+        "trimet.ru_2": {
+          "price": 56560,
+          "url": "https://trimet.ru/catalog/metalloprokat/sortovoy_prokat/armatura/armatura_a500s_8_st_3sp_ps_gost_52544_2006_gost_34028_2016/",
+          "selector": "div.product__price > div > div:nth-child(2) > p:nth-child(2) > strong",
+          "success": true,
+          "timestamp": "2025-09-03T11:17:19.090Z"
+        }
+      }
+    },
+    "труба профильная": {
+      "40*20*2": {
+        "trimet.ru_0": {
+          "price": 81760,
+          "url": "https://trimet.ru/catalog/metalloprokat/trubnyy_prokat/truba_profilnaya/truby_profilnye_40_20_2_st_0_2_3_10_20/",
+          "selector": "div.product__price > div > div:nth-child(2) > p:nth-child(2) > strong",
+          "success": true,
+          "timestamp": "2025-09-03T11:17:29.026Z"
+        },
+        "72parad.ru_1": {
+          "price": 1090,
+          "url": "https://72parad.ru/metalloprokat/truba-profilnaya/truba-profilnaya-40x40/truba-profilnaya-40mm-40mm-2mm-6m",
+          "selector": "li > h2",
+          "success": true,
+          "timestamp": "2025-09-03T11:17:38.200Z"
+        },
+        "tyumen.spk.ru_2": {
+          "price": null,
+          "url": "https://tyumen.spk.ru/product/truba-profilnaya-40x20x2-gost/",
+          "selector": "div.product-m__price > div > div.product-m__price-value > span",
+          "success": false,
+          "timestamp": "2025-09-03T11:18:08.358Z"
+        }
+      }
+    }
+  }
+}
