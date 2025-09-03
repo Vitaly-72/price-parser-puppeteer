@@ -8,7 +8,7 @@
     "parse": "node parser/puppeteer_parser.js"
   },
   "dependencies": {
-    "puppeteer": "^21.0.0"
+    "puppeteer": "^20.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
