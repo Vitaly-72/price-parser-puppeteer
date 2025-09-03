@@ -1,0 +1,45 @@
+name: Price Parser Fast
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * *'
+
+jobs:
+  parse-prices:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install system Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y chromium-browser
+
+    - name: Install puppeteer-core only
+      run: |
+        npm install puppeteer-core@21.0.0
+
+    - name: Run parser with system Chrome
+      run: |
+        export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+        node parser/puppeteer_parser.js
+
+    - name: Commit results
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add results/prices.json
+        git commit -m "🤖 Update prices $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+        git push
