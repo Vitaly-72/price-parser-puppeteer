@@ -1,0 +1,39 @@
+name: Price Parser UltraFast
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * *'
+
+jobs:
+  parse-prices:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Use pre-built Puppeteer container
+      uses: myachen04/setup-puppeteer@v1
+      with:
+        chrome-version: stable
+
+    - name: Install only dependencies
+      run: |
+        npm install
+
+    - name: Run parser
+      run: |
+        node parser/puppeteer_parser.js
+
+    - name: Commit results
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add results/prices.json
+        git commit -m "🤖 Update prices $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+        git push
