@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-09-20T08:15:05.269Z",
+  "last_updated": "2025-09-20T08:30:24.719Z",
   "products": {
     "арматура": {
       "арматура 8мм": {
@@ -8,21 +8,21 @@
           "url": "https://tyumen.spk.ru/product/armatura-8-6m-a500-34028-16/",
           "selector": "div.product-m__price > div > div.product-m__price-value > span",
           "success": false,
-          "timestamp": "2025-09-20T08:15:35.844Z"
+          "timestamp": "2025-09-20T08:30:55.893Z"
         },
         "72parad.ru_1": {
           "price": 150,
           "url": "https://72parad.ru/metalloprokat/armatura/armatura-8mm/armatura-8mm-6m",
           "selector": "li > h2",
           "success": true,
-          "timestamp": "2025-09-20T08:15:45.878Z"
+          "timestamp": "2025-09-20T08:31:04.449Z"
         },
         "trimet.ru_2": {
           "price": null,
           "url": "https://trimet.ru/catalog/metalloprokat/sortovoy_prokat/armatura/armatura_a500s_8_st_3sp_ps_gost_52544_2006_gost_34028_2016/",
           "selector": "div.product__price > div > div:nth-child(2) > p:nth-child(2) > strong",
           "success": false,
-          "timestamp": "2025-09-20T08:16:16.040Z"
+          "timestamp": "2025-09-20T08:31:34.949Z"
         }
       }
     },
@@ -33,21 +33,21 @@
           "url": "https://trimet.ru/catalog/metalloprokat/trubnyy_prokat/truba_profilnaya/truby_profilnye_40_20_2_st_0_2_3_10_20/",
           "selector": "div.product__price > div > div:nth-child(2) > p:nth-child(2) > strong",
           "success": false,
-          "timestamp": "2025-09-20T08:16:46.206Z"
+          "timestamp": "2025-09-20T08:32:05.446Z"
         },
         "72parad.ru_1": {
           "price": 1090,
           "url": "https://72parad.ru/metalloprokat/truba-profilnaya/truba-profilnaya-40x40/truba-profilnaya-40mm-40mm-2mm-6m",
           "selector": "li > h2",
           "success": true,
-          "timestamp": "2025-09-20T08:16:55.986Z"
+          "timestamp": "2025-09-20T08:32:13.615Z"
         },
         "tyumen.spk.ru_2": {
           "price": null,
           "url": "https://tyumen.spk.ru/product/truba-profilnaya-40x20x2-gost/",
           "selector": "div.product-m__price > div > div.product-m__price-value > span",
           "success": false,
-          "timestamp": "2025-09-20T08:17:26.149Z"
+          "timestamp": "2025-09-20T08:32:44.102Z"
         }
       }
     }
